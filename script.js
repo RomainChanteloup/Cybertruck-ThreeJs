@@ -6,17 +6,25 @@ const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-
+renderer.shadowMap.enabled = true;
 const scene = new THREE.Scene();
 
 const loader = new GLTFLoader();
 const fileName = './cybertruck/scene.gltf';
 let model;
 
+// const axesHelper = new THREE.AxesHelper( 5 );
+// scene.add( axesHelper );
+
 loader.load(fileName, function(gltf) {
   model = gltf.scene;
+  model.traverse( function( node ) {
+    if ( node.isMesh ) { node.castShadow = true; }
+  });
+  model.castShadow = true;
   scene.add(model);
   addLight();
+  addGround();
   adjustModelAndCamera();
   scene.add(camera);
   renderer.render(scene, camera);
@@ -31,9 +39,31 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.screenSpacePanning = true;
 
 function addLight() {
-  const light = new THREE.DirectionalLight(0xffffff, 4);
-  light.position.set(0.5, 0, 0.866);
-  camera.add(light);
+  const light = new THREE.DirectionalLight(0xffffff, 1.5);
+  light.position.set(-5, 2 ,5);
+  light.shadow.mapSize.width = 2048;
+  light.shadow.mapSize.height = 2048;
+  light.castShadow = true;
+  scene.add(light);
+
+  //Orange light
+  const light2 = new THREE.DirectionalLight(0xffa500, 2);
+  light2.position.set(5, 2, -5);
+  light2.shadow.mapSize.width = 2048;
+  light.shadow.mapSize.height = 2048;
+  light2.castShadow = true;
+  scene.add(light2);
+}
+
+function addGround() {
+  const ground = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(100, 100),
+    new THREE.MeshPhongMaterial({ color: 0xffffff})
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.5;
+  ground.receiveShadow = true;
+  scene.add(ground);
 }
 
 function adjustModelAndCamera() {

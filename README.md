@@ -1,3 +1,3 @@
 # Cybertruck-ThreeJs
 
-Url : https://Cybertruck-ThreeJs.romainchantelou.repl.co
+Url : https://romainchanteloup.github.io/Cybertruck-ThreeJs/
